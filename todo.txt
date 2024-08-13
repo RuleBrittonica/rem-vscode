@@ -1,0 +1,6 @@
+Add in the ability to preview the before and after of the selected text.
+    - This will be two side by side windows just below the main body of the
+    code.
+    - Once the user has specified the initial and final values, a call will be
+    made to the CLI to work out what needs to be changed
+    - Add in a confirm screen after the preview
