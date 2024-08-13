@@ -62,5 +62,6 @@
   "publish": {
     "baseContentUrl": "https://github.com/RuleBrittonica/rem-vscode/blob/main/",
     "baseImagesUrl": "https://github.com/RuleBrittonica/rem-vscode/raw/main/images/"
-  }
+  },
+  "publisher": "MatthewBritton"
 }
