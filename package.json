@@ -14,8 +14,23 @@
   "contributes": {
     "commands": [
       {
-        "command": "remvscode.helloWorld",
-        "title": "Hello World"
+        "command": "remvscode.refactor",
+        "title": "Refactor Rust Code"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "remvscode.refactor",
+          "group": "navigation"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "remvscode.refactor",
+        "key": "ctrl+shift+r",
+        "when": "editorTextFocus"
       }
     ]
   },
