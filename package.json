@@ -2,7 +2,7 @@
   "name": "remvscode",
   "displayName": "REM VSCode",
   "description": "VSCode extension utilising the REM toolchain and Rust Analyzer to allow for comprehensive refactoring of Rust Code",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.92.0"
   },
