@@ -1,71 +1,57 @@
-# remvscode README
+# REMVSCode
 
-This is the README for your extension "remvscode". After writing up a brief description, we recommend including the following sections.
+**REM VSCode** is a powerful extension that integrates the REM toolchain and
+Rust Analyzer with Visual Studio Code to enhance Rust code refactoring
+capabilities. This extension aims to provide comprehensive refactoring tools tailored
+for Rust, streamlining the development process.
 
-## Features
+Currently it is in the Development Phase, as part of a Research Project being
+conducted at the Australian National University by:
+- Matthew Britton (matt.britton@anu.edu.au)
+- Alex Potanin (alex.potanin@anu.edu.au)
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+## Current Features
 
-For example if there is an image subfolder under your extension project workspace:
+- **Easy Selection of Code**: Use familiar VSCode Shortcuts and menus to begin
+  the refactoring process
+- **Code Preview**: Preview the refactored code before changes are made to the
+  codebase
 
-\!\[feature X\]\(images/feature-x.png\)
+![Feature Screenshot - Pre Preview](images/pre-preview.png)
+*Pre Preview Screenshot*
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+![Feature Screenshot - Post Preview](images/post-preview.png)
+*Post Preview Screenshot*
+
+## Eventual Features
+
+- **Refactor Rust Code**: Easily refactor Rust code with advanced tools from the REM toolchain and Rust Analyzer.
+- **Context Menu Integration**: Access refactoring options directly from the editor's context menu.
+- **Keyboard Shortcuts**: Trigger refactoring with a customizable keyboard
+  shortcut (`Ctrl+Alt+F`).
+
+## Refactoring Capabilities
+
+- **NONE** (I'm working on it)
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+- **Visual Studio Code**: Version ^1.92.0 or higher.
+- **Rust Analyzer**: Ensure Rust Analyzer is installed and configured in your VSCode setup.
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+This extension does not currently add any VS Code settings through the `contributes.configuration` extension point.
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+- Currently, there are no known issues. Please report any bugs or feature requests on the [GitHub repository](https://github.com/RuleBrittonica/rem-vscode).
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+### 0.1.0
 
-### 1.0.0
+- Initial release of REM VSCode.
+- Test of the build process, has NO REFACTORING CAPABILITIES.
 
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+**Enjoy using REM VSCode!**
