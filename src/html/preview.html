@@ -45,19 +45,28 @@
       // Update editors with initial content
       window.addEventListener('message', event => {
         const message = event.data;
+        let newCode;
         switch (message.command) {
-          case 'update':
-            // Set the initial content for the LHS editor
+          case 'initialise':
+            // Set the initial content for the LHS Editor
             originalEditor.setValue(message.data.originalCode);
 
-            // Placeholder function to generate new code
-            const newCode = generateNewCode(message.data.originalCode);
-            // Set the preview content for the RHS editor
+            // Display a Temporary Message on the RHS Editor
+            newCode = 'Press Preview button to view a preview of the Refactored Code';
             newEditor.setValue(newCode);
 
+            // Initialize the Text Fields as well
             document.getElementById('option').textContent = message.data.option;
             document.getElementById('originalName').textContent = message.data.originalName;
             document.getElementById('newName').textContent = message.data.newName;
+            break;
+          case 'preview':
+            // Set the initial content for the LHS Editor
+            originalEditor.setValue(message.data.originalCode);
+
+            // Display the Refactored Code on the RHS Editor
+            newCode = message.data.newCode;
+            newEditor.setValue(newCode);
             break;
           case 'showConfirmButton':
             document.getElementById('confirmButton').style.display = 'inline';

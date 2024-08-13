@@ -97,14 +97,28 @@ export function activate(context: vscode.ExtensionContext) {
       cssUri: panel.webview.asWebviewUri(vscode.Uri.file(path.join(context.extensionPath, 'src', 'css', 'styles.css'))).toString()
     });
 
+    // Immediately send the 'initialise' command to the webview
+    panel.webview.postMessage({
+      command: 'initialise',
+      data: {
+        originalCode: selectedText,
+        option: selectedOption,
+        originalName: originalNameTextField,
+        newName: newNameTextField
+      }
+    });
+
     // Handle messages from the webview
     panel.webview.onDidReceiveMessage(
       message => {
         switch (message.command) {
+          case 'initialise':
+            // TODO Might need to add stuff here
+            break;
           case 'preview':
-            const newCode = generateNewCode(selectedText); // Generate the new code
+            const newCode = generateNewCode(selectedText); // Generate the new code using the CLI
             panel.webview.postMessage({
-              command: 'update',
+              command: 'preview',
               data: {
                 originalCode: selectedText,
                 newCode: newCode // Send the generated new code
@@ -113,8 +127,7 @@ export function activate(context: vscode.ExtensionContext) {
             panel.webview.postMessage({ command: 'showConfirmButton' });
             break;
           case 'confirm':
-            vscode.window.showInformationMessage('Confirmed refactoring: ${selectedOption}, from ${originalNameTextField} to ${newNameTextField}');
-            // Call the CLI here
+            vscode.window.showInformationMessage(`Confirmed refactoring: ${selectedOption}, from ${originalNameTextField} to ${newNameTextField}`);
             break;
           case 'close':
             panel.dispose(); // Close the webview panel
@@ -147,15 +160,15 @@ function getWebviewContent(previewHtmlContent: string, context: {
 function getPandP_original(option: string) {
   // Define prompts and placeholders based on the option
   return {
-    promptText: 'Enter the original name for the ${option}:',
-    placeholderText: 'Original ${option} Name'
+    promptText: `Enter the original name for the ${option}:`,
+    placeholderText: `Original ${option} Name`
   };
 }
 
 function getPandP_new(option: string) {
   // Define prompts and placeholders based on the option
   return {
-    promptText: 'Enter the new name for the ${option}:',
-    placeholderText: 'New ${option} Name'
+    promptText: `Enter the new name for the ${option}:`,
+    placeholderText: `New ${option} Name`
   };
 }
