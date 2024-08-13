@@ -9,6 +9,22 @@ export function activate(context: vscode.ExtensionContext) {
       return;
     }
 
+    const document = editor.document;
+    const selection = editor.selection;
+
+    // Get the start and end line numbers of the selection
+    const startLine = selection.start.line;
+    const endLine = selection.end.line;
+
+    // Get the range for the entire selection area
+    const startRange = document.lineAt(startLine).range.start;
+    const endRange = document.lineAt(endLine).range.end;
+
+    // Expand selection to cover the entire range from start of the first selected line to end of the last selected line
+    const expandedSelection = new vscode.Selection(startRange, endRange);
+    editor.selection = expandedSelection;
+
+    // Get the expanded selected text
     const selectedText = editor.document.getText(editor.selection);
 
     // Display a dropdown menu with the options to refactor

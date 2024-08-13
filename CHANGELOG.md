@@ -2,8 +2,22 @@
 
 All notable changes to the "remvscode" extension will be documented in this file.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
 ## [Unreleased]
 
-- Initial release
+### Added
+
+- Menus in Header to select what is being refactored
+- Preview Window to review changes
+- Confirm Button to set changes (at this stage, no changes are being applied)
+
+### Changed
+
+### Removed
+
+## [1.0.0]
+
+### Added
+
+### Changed
+
+### Removed
