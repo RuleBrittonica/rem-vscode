@@ -1,4 +1,6 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
+import * as fs from 'fs';
 
 export function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands.registerCommand('remvscode.refactor', async () => {
@@ -51,81 +53,89 @@ export function activate(context: vscode.ExtensionContext) {
       return; // User canceled the input
     }
 
-    // Process the refactoring using the selected option and inputs
-    vscode.window.showInformationMessage(`Selected Option: ${selectedOption}, Original Name: ${originalNameTextField}, New Name: ${newNameTextField}`);
+    // Create a webview panel to display the preview
+    const panel = vscode.window.createWebviewPanel(
+      'refactorPreview',
+      'Refactor Preview',
+      vscode.ViewColumn.One,
+      {
+        enableScripts: true,
+        localResourceRoots: [
+          vscode.Uri.file(path.join(context.extensionPath, 'src', 'css')),
+          vscode.Uri.file(path.join(context.extensionPath, 'src', 'html'))
+        ]
+      }
+    );
 
-    // Call the CLI for REM :D
+    // Get the path to the preview.html file
+    const previewHtmlPath = vscode.Uri.file(path.join(context.extensionPath, 'src', 'html', 'preview.html'));
+    const previewHtmlContent = fs.readFileSync(previewHtmlPath.fsPath, 'utf8');
+
+    // Update the webview content
+    panel.webview.html = getWebviewContent(previewHtmlContent, {
+      selectedOption,
+      originalNameTextField,
+      newNameTextField,
+      selectedText,
+      cssUri: panel.webview.asWebviewUri(vscode.Uri.file(path.join(context.extensionPath, 'src', 'css', 'styles.css'))).toString()
+    });
+
+    // Handle messages from the webview
+    panel.webview.onDidReceiveMessage(
+      message => {
+        switch (message.command) {
+          case 'preview':
+            // Update the webview with preview information
+            panel.webview.postMessage({
+              command: 'update',
+              data: {
+                originalCode: selectedText,
+                newCode: selectedText // For now, just showing the original code
+              }
+            });
+            panel.webview.postMessage({ command: 'showConfirmButton' });
+            break;
+          case 'confirm':
+            vscode.window.showInformationMessage(`Confirmed refactoring: ${selectedOption}, from ${originalNameTextField} to ${newNameTextField}`);
+            // Call the CLI here
+            break;
+        }
+      },
+      undefined,
+      context.subscriptions
+    );
   });
 
   context.subscriptions.push(disposable);
 }
 
-export function deactivate() {}
-
-// Function to get prompt and placeholder text for the original name
-function getPandP_original(selectedOption: string): { promptText: string, placeholderText: string } {
-  let promptText = '';
-  let placeholderText = '';
-
-  switch (selectedOption) {
-    case 'Variable':
-      promptText = 'Enter the name of the variable to be refactored';
-      placeholderText = 'Variable name';
-      break;
-    case 'Function (fn)':
-      promptText = 'Enter the name of the function to be refactored';
-      placeholderText = 'Function name';
-      break;
-    case 'Struct':
-      promptText = 'Enter the name of the struct to be refactored';
-      placeholderText = 'Struct name';
-      break;
-    case 'Trait':
-      promptText = 'Enter the name of the trait to be refactored';
-      placeholderText = 'Trait name';
-      break;
-    case 'Implementation (impl)':
-      promptText = 'Enter the name of the impl to be refactored';
-      placeholderText = 'Implementation name';
-      break;
-    default:
-      promptText = 'Enter the name of the item to be refactored';
-      placeholderText = 'Item name';
-  }
-
-  return { promptText, placeholderText };
+function getWebviewContent(previewHtmlContent: string, context: {
+    selectedOption: string,
+    originalNameTextField: string,
+    newNameTextField: string,
+    selectedText: string,
+    cssUri: string
+  }): string {
+    return previewHtmlContent
+      .replace('{{selectedOption}}', context.selectedOption)
+      .replace('{{originalName}}', context.originalNameTextField)
+      .replace('{{newName}}', context.newNameTextField)
+      .replace('{{selectedText}}', context.selectedText)
+      .replace('{{cssUri}}', context.cssUri);
 }
 
-// Function to get prompt and placeholder text for the new name
-function getPandP_new(selectedOption: string): { promptText: string, placeholderText: string } {
-  let promptText = '';
-  let placeholderText = '';
+function getPandP_original(option: string) {
+  // Define prompts and placeholders based on the option
+  return {
+    promptText: `Enter the original name for the ${option}:`,
+    placeholderText: `Original ${option} Name`
+  };
+}
 
-  switch (selectedOption) {
-    case 'Variable':
-      promptText = 'Enter the new name for the variable';
-      placeholderText = 'New variable name';
-      break;
-    case 'Function (fn)':
-      promptText = 'Enter the new name for the function';
-      placeholderText = 'New function name';
-      break;
-    case 'Struct':
-      promptText = 'Enter the new name for the struct';
-      placeholderText = 'New struct name';
-      break;
-    case 'Trait':
-      promptText = 'Enter the new name for the trait';
-      placeholderText = 'New trait name';
-      break;
-    case 'Implementation (impl)':
-      promptText = 'Enter the new name for the implementation';
-      placeholderText = 'New implementation name';
-      break;
-    default:
-      promptText = 'Enter the new name for the item';
-      placeholderText = 'New item name';
-  }
-
-  return { promptText, placeholderText };
+function getPandP_new(option: string) {
+  // Define prompts and placeholders based on the option
+  return {
+    promptText: `Enter the new name for the ${option}:`,
+    placeholderText: `New ${option} Name`
+  };
 }

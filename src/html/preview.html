@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Refactor Preview</title>
+  <link rel="stylesheet" href="{{cssUri}}">
+</head>
+<body>
+  <h1>Review Your Changes</h1>
+  <p><strong>Option:</strong> <span id="option">{{selectedOption}}</span></p>
+  <p><strong>Original Name:</strong> <span id="originalName">{{originalName}}</span></p>
+  <p><strong>New Name:</strong> <span id="newName">{{newName}}</span></p>
+
+  <div class="container">
+    <div class="code-container" id="originalCode">{{selectedText}}</div>
+    <div class="code-container" id="newCode">Refactored code will appear here...</div>
+  </div>
+
+  <button id="previewButton">Preview</button>
+  <button id="confirmButton" style="display:none;">Confirm</button>
+
+  <script>
+    const vscode = acquireVsCodeApi();
+
+    document.getElementById('previewButton').addEventListener('click', () => {
+      vscode.postMessage({ command: 'preview' });
+    });
+
+    document.getElementById('confirmButton').addEventListener('click', () => {
+      vscode.postMessage({ command: 'confirm' });
+    });
+
+    window.addEventListener('message', event => {
+      const message = event.data;
+      switch (message.command) {
+        case 'update':
+          document.getElementById('option').textContent = message.data.option;
+          document.getElementById('originalName').textContent = message.data.originalName;
+          document.getElementById('newName').textContent = message.data.newName;
+          document.getElementById('originalCode').textContent = message.data.originalCode;
+          document.getElementById('newCode').textContent = message.data.newCode;
+          break;
+        case 'showConfirmButton':
+          document.getElementById('confirmButton').style.display = 'inline';
+          break;
+      }
+    });
+  </script>
+</body>
+</html>
