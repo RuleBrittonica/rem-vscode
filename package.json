@@ -29,7 +29,7 @@
     "keybindings": [
       {
         "command": "remvscode.refactor",
-        "key": "ctrl+alt+r",
+        "key": "ctrl+alt+f",
         "when": "editorTextFocus"
       }
     ]

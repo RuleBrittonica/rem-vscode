@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
+import { generateNewCode } from './codeGeneration'; // Import the function
 
 export function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands.registerCommand('remvscode.refactor', async () => {
@@ -101,19 +102,22 @@ export function activate(context: vscode.ExtensionContext) {
       message => {
         switch (message.command) {
           case 'preview':
-            // Update the webview with preview information
+            const newCode = generateNewCode(selectedText); // Generate the new code
             panel.webview.postMessage({
               command: 'update',
               data: {
                 originalCode: selectedText,
-                newCode: selectedText // For now, just showing the original code
+                newCode: newCode // Send the generated new code
               }
             });
             panel.webview.postMessage({ command: 'showConfirmButton' });
             break;
           case 'confirm':
-            vscode.window.showInformationMessage(`Confirmed refactoring: ${selectedOption}, from ${originalNameTextField} to ${newNameTextField}`);
+            vscode.window.showInformationMessage('Confirmed refactoring: ${selectedOption}, from ${originalNameTextField} to ${newNameTextField}');
             // Call the CLI here
+            break;
+          case 'close':
+            panel.dispose(); // Close the webview panel
             break;
         }
       },
@@ -132,26 +136,26 @@ function getWebviewContent(previewHtmlContent: string, context: {
     selectedText: string,
     cssUri: string
   }): string {
-    return previewHtmlContent
-      .replace('{{selectedOption}}', context.selectedOption)
-      .replace('{{originalName}}', context.originalNameTextField)
-      .replace('{{newName}}', context.newNameTextField)
-      .replace('{{selectedText}}', context.selectedText)
-      .replace('{{cssUri}}', context.cssUri);
+  return previewHtmlContent
+    .replace('{{selectedOption}}', context.selectedOption)
+    .replace('{{originalName}}', context.originalNameTextField)
+    .replace('{{newName}}', context.newNameTextField)
+    .replace('{{selectedText}}', context.selectedText)
+    .replace('{{cssUri}}', context.cssUri);
 }
 
 function getPandP_original(option: string) {
   // Define prompts and placeholders based on the option
   return {
-    promptText: `Enter the original name for the ${option}:`,
-    placeholderText: `Original ${option} Name`
+    promptText: 'Enter the original name for the ${option}:',
+    placeholderText: 'Original ${option} Name'
   };
 }
 
 function getPandP_new(option: string) {
   // Define prompts and placeholders based on the option
   return {
-    promptText: `Enter the new name for the ${option}:`,
-    placeholderText: `New ${option} Name`
+    promptText: 'Enter the new name for the ${option}:',
+    placeholderText: 'New ${option} Name'
   };
 }
