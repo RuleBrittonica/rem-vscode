@@ -3,13 +3,18 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { generateNewCode, addComments } from './codeGeneration'; // Import the function
 
+let activeEditor: vscode.TextEditor | undefined;
+
 export function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands.registerCommand('remvscode.refactor', async () => {
-    const editor = vscode.window.activeTextEditor;
-    if (!editor) {
+    activeEditor = vscode.window.activeTextEditor;
+
+    if (!activeEditor) {
+      vscode.window.showErrorMessage('No active editor found.');
       return;
     }
 
+    const editor = activeEditor;
     const document = editor.document;
     const selection = editor.selection;
 
@@ -104,7 +109,9 @@ export function activate(context: vscode.ExtensionContext) {
         originalCode: selectedText,
         option: selectedOption,
         originalName: originalNameTextField,
-        newName: newNameTextField
+        newName: newNameTextField,
+        startLine,
+        endLine
       }
     });
 
@@ -129,19 +136,29 @@ export function activate(context: vscode.ExtensionContext) {
             panel.webview.postMessage({ command: 'showConfirmButton' });
             break;
           case 'confirm':
-            // Create a new range to replace the selected text
-            const rangeToReplace = new vscode.Range(startRange, endRange);
+            const overwriteCode = message.newCode;
 
-            // Replace the entire range with the new code
-            editor.edit(editBuilder => {
-              editBuilder.replace(rangeToReplace, message.newCode);
-            }).then(success => {
-              if (success) {
-                vscode.window.showInformationMessage(`Refactoring confirmed: ${message.selectedOption}, from ${message.originalNameTextField} to ${message.newNameTextField}`);
-              } else {
-                vscode.window.showErrorMessage('Failed to replace text.');
-              }
-            });
+            if (activeEditor) {
+              // Get the document
+              const document = activeEditor.document;
+
+              // Create a range from the start to the end line
+              const startRange = document.lineAt(startLine).range.start;
+              const endRange = document.lineAt(endLine).range.end;
+              const range = new vscode.Range(startRange, endRange);
+
+              // Replace the text in the range with the new code
+              activeEditor.edit(editBuilder => {
+                editBuilder.replace(range, overwriteCode);
+              }).then(success => {
+                if (!success) {
+                  vscode.window.showErrorMessage('Failed to replace code.');
+                }
+              });
+            } else {
+              vscode.window.showErrorMessage('Editor context is unavailable.');
+            }
+
             break;
           case 'close':
             panel.dispose(); // Close the webview panel
@@ -155,6 +172,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(disposable);
 }
+
 
 function getWebviewContent(previewHtmlContent: string, context: {
     selectedOption: string,

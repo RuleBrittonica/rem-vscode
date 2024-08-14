@@ -27,6 +27,8 @@ All notable changes to the "remvscode" extension will be documented in this file
 
 - Column in preview window for User to Add Comments before and after the
   refactored code
+- Significantly improve the application's Looks
+- What is seen after clicking Preview now overwrites the highlighted text
 
 ### Changed
 - None
