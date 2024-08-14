@@ -110,24 +110,38 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Handle messages from the webview
     panel.webview.onDidReceiveMessage(
-      message => {
+      async message => {
         switch (message.command) {
-          case 'initialise':
-            // TODO Might need to add stuff here
-            break;
           case 'preview':
             const newCode = generateNewCode(selectedText); // Generate the new code using the CLI
+
+            // Extract comments from message
+            const { headerComment, footerComment } = message;
+            const commentedCode = addComments(newCode, headerComment, footerComment); // Add the comments to the Code
+
             panel.webview.postMessage({
               command: 'preview',
               data: {
                 originalCode: selectedText,
-                newCode: newCode // Send the generated new code
+                newCode: commentedCode // Send the generated new code with comments
               }
             });
             panel.webview.postMessage({ command: 'showConfirmButton' });
             break;
           case 'confirm':
-            vscode.window.showInformationMessage(`Confirmed refactoring: ${selectedOption}, from ${originalNameTextField} to ${newNameTextField}`);
+            // Create a new range to replace the selected text
+            const rangeToReplace = new vscode.Range(startRange, endRange);
+
+            // Replace the entire range with the new code
+            editor.edit(editBuilder => {
+              editBuilder.replace(rangeToReplace, message.newCode);
+            }).then(success => {
+              if (success) {
+                vscode.window.showInformationMessage(`Refactoring confirmed: ${message.selectedOption}, from ${message.originalNameTextField} to ${message.newNameTextField}`);
+              } else {
+                vscode.window.showErrorMessage('Failed to replace text.');
+              }
+            });
             break;
           case 'close':
             panel.dispose(); // Close the webview panel

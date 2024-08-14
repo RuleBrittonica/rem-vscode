@@ -145,7 +145,8 @@
       });
 
       document.getElementById('confirmButton').addEventListener('click', () => {
-        vscode.postMessage({ command: 'confirm' });
+        const newCode = newEditor.getValue(); // Get the new code from the editor
+        vscode.postMessage({ command: 'confirm', newCode: newCode });
         vscode.postMessage({ command: 'close' });
       });
     });
