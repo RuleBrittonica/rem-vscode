@@ -10,6 +10,8 @@ conducted at the Australian National University by:
 - Matthew Britton (matt.britton@anu.edu.au)
 - Alex Potanin
 
+https://marketplace.visualstudio.com/items?itemName=MatthewBritton.remvscode&ssr=false#overview
+
 ## Current Features
 
 - **Easy Selection of Code**: Use familiar VSCode Shortcuts and menus to begin
