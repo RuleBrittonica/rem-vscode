@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import { generateNewCode } from './codeGeneration'; // Import the function
+import { generateNewCode, addComments } from './codeGeneration'; // Import the function
 
 export function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands.registerCommand('remvscode.refactor', async () => {

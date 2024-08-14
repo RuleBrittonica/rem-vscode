@@ -4,6 +4,8 @@ All notable changes to the "remvscode" extension will be documented in this file
 
 ## [Unreleased]
 
+## [0.1.0]
+
 ### Added
 
 - Menus in Header to select what is being refactored
@@ -19,10 +21,15 @@ All notable changes to the "remvscode" extension will be documented in this file
 ### Removed
 - None
 
-## [1.0.0]
+## [0.1.1]
 
 ### Added
 
+- Column in preview window for User to Add Comments before and after the
+  refactored code
+
 ### Changed
+- None
 
 ### Removed
+- None

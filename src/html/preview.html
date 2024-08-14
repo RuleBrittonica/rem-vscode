@@ -9,11 +9,43 @@
   <script src="https://unpkg.com/monaco-editor@0.30.1/min/vs/loader.js"></script>
 </head>
 <body>
-  <h1>Review Your Selections</h1>
-  <p><strong>Option:</strong> <span id="option">{{selectedOption}}</span></p>
-  <p><strong>Original Name:</strong> <span id="originalName">{{originalName}}</span></p>
-  <p><strong>New Name:</strong> <span id="newName">{{newName}}</span></p>
+  <div class="container">
+    <!-- Left Column -->
+    <div class="left-column">
+      <h1>Review Your Selections</h1>
+      <p><strong>Option:</strong> <span id="option">{{selectedOption}}</span></p>
+      <p><strong>Original Name:</strong> <span id="originalName">{{originalName}}</span></p>
+      <p><strong>New Name:</strong> <span id="newName">{{newName}}</span></p>
+    </div>
 
+    <!-- Right Column -->
+    <div class="right-column">
+      <!-- Dropdown for Selecting Comment Type -->
+      <div class="comment-type-container">
+        <label for="commentType">Select Comment Type:</label>
+        <select id="commentType">
+          <option value="none">None</option>
+          <option value="display">Display</option>
+          <option value="default">Default</option>
+          <!-- Add more options as needed -->
+        </select>
+      </div>
+
+      <!-- Comment Editors -->
+      <div class="comment-editors-container">
+        <!-- Header Comment Editor -->
+        <label for="headerCommentContainer">Header Comment:</label>
+        <div id="headerCommentContainer" class="header-comment-container"></div>
+
+        <!-- Footer Comment Editor -->
+        <label for="footerCommentContainer">Footer Comment:</label>
+        <div id="footerCommentContainer" class="footer-comment-container"></div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Code Editors Container -->
   <div class="container">
     <div id="originalCodeContainer" class="editor-container"></div>
     <div id="newCodeContainer" class="editor-container"></div>
@@ -40,6 +72,18 @@
         language: 'rust',
         theme: 'vs-dark',
         readOnly: true
+      });
+      let headerCommentEditor = monaco.editor.create(document.getElementById('headerCommentContainer'), {
+        value: '// Write header comments here',
+        language: 'rust',
+        theme: 'vs-dark',
+        readOnly: false
+      });
+      let footerCommentEditor = monaco.editor.create(document.getElementById('footerCommentContainer'), {
+        value: '// Write footer comments here',
+        language: 'rust',
+        theme: 'vs-dark',
+        readOnly: false
       });
 
       // Update editors with initial content
@@ -75,7 +119,16 @@
       });
 
       document.getElementById('previewButton').addEventListener('click', () => {
-        vscode.postMessage({ command: 'preview' });
+        const headerComment = headerCommentEditor.getValue();
+        const footerComment = footerCommentEditor.getValue();
+        const commentType = document.getElementById('commentType').value;
+
+        vscode.postMessage({
+          command: 'preview',
+          headerComment: headerComment,
+          footerComment: footerComment,
+          commentType: commentType
+        });
       });
 
       document.getElementById('confirmButton').addEventListener('click', () => {

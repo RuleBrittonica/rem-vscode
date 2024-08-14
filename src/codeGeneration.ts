@@ -3,5 +3,13 @@ export function generateNewCode(originalCode: string): string {
     // For now, just return the original code with a comment
     // TODO: Replace this with the actual code transformation logic later (based
     // on the REM-CLI I need to write)
-    return `// Refactored code based on:\n\n${originalCode}`;
+    return `${originalCode}`;
+}
+
+export function addComments (originalCode: string, startComment: string, endComment: string): string {
+    let newCode: string =
+        `${startComment}
+         ${originalCode}
+         ${endComment}`;
+    return newCode;
 }
