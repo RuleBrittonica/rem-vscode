@@ -8,7 +8,7 @@ for Rust, streamlining the development process.
 Currently it is in the Development Phase, as part of a Research Project being
 conducted at the Australian National University by:
 - Matthew Britton (matt.britton@anu.edu.au)
-- Alex Potanin (alex.potanin@anu.edu.au)
+- Alex Potanin
 
 ## Current Features
 
