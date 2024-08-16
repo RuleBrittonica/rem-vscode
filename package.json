@@ -65,6 +65,9 @@
   },
   "publisher": "MatthewBritton",
   "dependencies": {
-    "fuse.js": "^7.0.0"
+    "fs": "^0.0.1-security",
+    "fuse.js": "^7.0.0",
+    "path": "^0.12.7",
+    "vscode": "^1.1.37"
   }
 }
