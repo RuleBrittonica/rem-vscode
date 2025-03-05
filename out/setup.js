@@ -96,6 +96,17 @@ async function ensureOpensslDev() {
  * Ensures that the Rust nightly toolchain is installed.
  */
 async function ensureNightlyToolchain(toolchain) {
+    // Ensure that rustup is installed. Attempt to install the toolchain if
+    // missing.
+    if (!(await commandExists("rustup"))) {
+        await promptAndInstall("rustup", "rustup", "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y");
+    }
+    if (!(await commandExists("rustup"))) {
+        throw new Error("Failed to install rustup.");
+    }
+    else {
+        console.log("[INFO] Found rustup.");
+    }
     try {
         const { stdout } = await runCommand(`rustup toolchain list`);
         if (!stdout.split('\n').some(line => line.startsWith(toolchain))) {
@@ -157,9 +168,7 @@ function isVersionSufficient(actual, required) {
  */
 async function ensureCoq(minVersion) {
     try {
-        // Attempt to get the version using "coqc --version".
         const { stdout } = await runCommand("coqc --version");
-        // Example output: "The Coq Proof Assistant, version 8.18.0 (January 2024)"
         const versionMatch = stdout.match(/version\s+([\d.]+)/i);
         if (!versionMatch) {
             throw new Error("Unable to parse Coq version.");
@@ -171,8 +180,22 @@ async function ensureCoq(minVersion) {
         console.log(`[INFO] Coq version ${actualVersion} is sufficient.`);
     }
     catch (error) {
-        // If coqc is missing or version is insufficient, prompt to install via opam.
+        // Check if opam has been initialized before trying to install Coq
+        if (!(await isOpamInitialized())) {
+            vscode.window.showErrorMessage("Opam has not been initialized. Please run `opam init` in your terminal and then restart VS Code.");
+            throw new Error("Opam has not been initialized.");
+        }
         await promptAndInstall("Coq", `coq (version ${minVersion})`, `opam pin add coq ${minVersion} --yes --no-action && opam install coq -y`);
+    }
+}
+async function isOpamInitialized() {
+    try {
+        // This command should work if opam has been initialized.
+        await runCommand("opam config env");
+        return true;
+    }
+    catch (error) {
+        return false;
     }
 }
 /**

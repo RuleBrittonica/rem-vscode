@@ -13,18 +13,10 @@ export async function activate(context: vscode.ExtensionContext) {
       vscode.window.activeTextEditor.document.languageId === 'rust') {
         try {
           await setupEnvironment();
-        } catch (error) {
-          vscode.window.showErrorMessage(`Environment setup failed: ${error}`);
-        }
-        try {
           await setupAeneasAndCharon(context);
-        } catch (error) {
-          vscode.window.showErrorMessage(`Aeneas and Charon setup failed: ${error}`);
-        }
-        try {
           await ensureRemCommandLineInstalled();
         } catch (error) {
-          vscode.window.showErrorMessage(`rem-command-line installation failed: ${error}`);
+          vscode.window.showErrorMessage(`Setup failed: ${error}`);
         }
   }
 

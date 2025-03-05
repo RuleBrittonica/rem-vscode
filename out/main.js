@@ -38,21 +38,11 @@ async function activate(context) {
         vscode.window.activeTextEditor.document.languageId === 'rust') {
         try {
             await (0, setup_1.setupEnvironment)();
-        }
-        catch (error) {
-            vscode.window.showErrorMessage(`Environment setup failed: ${error}`);
-        }
-        try {
             await (0, aeneas_1.setupAeneasAndCharon)(context);
-        }
-        catch (error) {
-            vscode.window.showErrorMessage(`Aeneas and Charon setup failed: ${error}`);
-        }
-        try {
             await (0, cli_1.ensureRemCommandLineInstalled)();
         }
         catch (error) {
-            vscode.window.showErrorMessage(`rem-command-line installation failed: ${error}`);
+            vscode.window.showErrorMessage(`Setup failed: ${error}`);
         }
     }
     // Have a message that displays the paths to the binaries
