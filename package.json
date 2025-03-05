@@ -50,22 +50,27 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
+    "compile": "npm run check-types && node esbuild.js",
+    "check-types": "tsc --noEmit",
     "watch": "tsc -watch -p ./",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "package": "npm run check-types && node esbuild.js --production",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.92.0",
     "@types/mocha": "^10.0.7",
     "@types/node": "20.x",
+    "@types/vscode": "^1.92.0",
     "@typescript-eslint/eslint-plugin": "^7.14.1",
     "@typescript-eslint/parser": "^7.11.0",
-    "eslint": "^8.57.0",
-    "typescript": "^5.4.5",
     "@vscode/test-cli": "^0.0.9",
-    "@vscode/test-electron": "^2.4.0"
+    "@vscode/test-electron": "^2.4.0",
+    "esbuild": "^0.25.0",
+    "eslint": "^8.57.0",
+    "typescript": "^5.4.5"
   },
   "repository": {
     "type": "git",
@@ -77,6 +82,7 @@
   },
   "publisher": "MatthewBritton",
   "dependencies": {
+    "@vscode/vsce": "^3.2.2",
     "mocha": "^10.7.3",
     "typescript": "^5.5.4"
   }
