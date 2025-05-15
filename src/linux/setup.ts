@@ -143,8 +143,8 @@ function isVersionSufficient(actual: string, required: string): boolean {
   const actualNums = toNumbers(actual);
   const requiredNums = toNumbers(required);
   for (let i = 0; i < requiredNums.length; i++) {
-    if ((actualNums[i] || 0) > requiredNums[i]) return true;
-    if ((actualNums[i] || 0) < requiredNums[i]) return false;
+    if ((actualNums[i] || 0) > requiredNums[i]) {return true;}
+    if ((actualNums[i] || 0) < requiredNums[i]) {return false;}
   }
   return true;
 }
@@ -236,9 +236,4 @@ export async function setupEnvironment(): Promise<void> {
     vscode.window.showErrorMessage(`Setup error: ${error}`);
     console.error(error);
   }
-}
-
-// If running this module directly (for testing), call setupEnvironment.
-if (require.main === module) {
-  setupEnvironment().catch(console.error);
 }

@@ -80,6 +80,7 @@ export async function setupAeneasAndCharon(context: vscode.ExtensionContext): Pr
   const extRoot = context.extensionPath;
 
   // Define the repository URL and local clone directory.
+  // This fork of AENEAS ignores any nix installation.
   const repoUrl = 'https://github.com/RuleBrittonica/aeneas.git';
   const cloneDir = path.join(extRoot, 'aeneas');
 

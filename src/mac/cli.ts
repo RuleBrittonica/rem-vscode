@@ -38,8 +38,8 @@ function compareVersions(v1: string, v2: string): number {
   for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
     const p1 = parts1[i] || 0;
     const p2 = parts2[i] || 0;
-    if (p1 > p2) return 1;
-    if (p1 < p2) return -1;
+    if (p1 > p2) { return 1; }
+    if (p1 < p2) { return -1; }
   }
   return 0;
 }
@@ -51,6 +51,11 @@ function compareVersions(v1: string, v2: string): number {
  * If not, it prompts the user to update the toolchain.
  */
 export async function ensureRemCommandLineInstalled(): Promise<void> {
+  if (process.platform !== 'darwin') {
+    vscode.window.showErrorMessage('CLI setup currently supports macOS only.');
+    return;
+  }
+
   const commandName = 'rem-command-line';
   const requiredVersion = '1.84.0';
   const targetToolchain = 'nightly-2025-02-08';
@@ -80,7 +85,6 @@ export async function ensureRemCommandLineInstalled(): Promise<void> {
       if (choice === "Yes") {
         vscode.window.showInformationMessage("Updating rustup toolchains...");
         console.log(`[INFO] Updating rustup toolchains...`);
-        // Update all installed toolchains.
         await execPromise(`rustup update`);
         rustVersion = await getRustVersion();
         if (compareVersions(rustVersion, requiredVersion) < 0) {
@@ -100,9 +104,8 @@ export async function ensureRemCommandLineInstalled(): Promise<void> {
   }
 
   // Check if rem-command-line is already installed.
-  const command_alias = 'rem-cli';
-  // Whilst rem-command-line is the crate name, rem-cli is the binary name.
-  if (await commandExists(command_alias)) {
+  const commandAlias = 'rem-cli';
+  if (await commandExists(commandAlias)) {
     vscode.window.showInformationMessage(`${commandName} is already installed.`);
     console.log(`[INFO] Found ${commandName}.`);
     return;
@@ -112,7 +115,6 @@ export async function ensureRemCommandLineInstalled(): Promise<void> {
   console.log(`[INFO] ${commandName} not found. Installing via cargo...`);
 
   try {
-    // Install rem-command-line using cargo.
     await execPromise(`cargo install rem-command-line --locked`);
     vscode.window.showInformationMessage(`${commandName} installed successfully.`);
     console.log(`[INFO] ${commandName} installed successfully.`);

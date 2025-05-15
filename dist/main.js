@@ -37,7 +37,7 @@ module.exports = __toCommonJS(main_exports);
 var vscode4 = __toESM(require("vscode"));
 var import_child_process4 = require("child_process");
 
-// src/setup.ts
+// src/linux/setup.ts
 var vscode = __toESM(require("vscode"));
 var import_child_process = require("child_process");
 var import_util = require("util");
@@ -216,7 +216,7 @@ if (require.main === module) {
   setupEnvironment().catch(console.error);
 }
 
-// src/aeneas.ts
+// src/linux/aeneas.ts
 var vscode2 = __toESM(require("vscode"));
 var import_child_process2 = require("child_process");
 var import_util2 = require("util");
@@ -333,7 +333,7 @@ async function setupAeneasAndCharon(context) {
   }
 }
 
-// src/cli.ts
+// src/linux/cli.ts
 var vscode3 = __toESM(require("vscode"));
 var import_child_process3 = require("child_process");
 var import_util3 = require("util");

@@ -1,9 +1,18 @@
 import * as vscode from 'vscode';
 import { exec } from 'child_process';
-import { setupEnvironment } from './setup';
-import { setupAeneasAndCharon } from './aeneas';
-import { ensureRemCommandLineInstalled } from './cli';
+import { setupEnvironment as l_setupEnvironment } from './linux/setup';
+import { setupAeneasAndCharon as l_setupAeneasAndCharon } from './linux/aeneas';
+import { ensureRemCommandLineInstalled as l_ensureRemCommandLineInstalled } from './linux/cli';
+import { setupEnvironment as w_setupEnvironment } from './windows/setup';
+import { setupAeneasAndCharon as w_setupAeneasAndCharon } from './windows/aeneas';
+import { ensureRemCommandLineInstalled as w_ensureRemCommandLineInstalled } from './windows/cli';
+import { setupEnvironment as m_setupEnvironment } from './mac/setup';
+import { setupAeneasAndCharon as m_setupAeneasAndCharon } from './mac/aeneas';
+import { ensureRemCommandLineInstalled as m_ensureRemCommandLineInstalled } from './mac/cli';
 
+// import { setupEnvironment as m_setupEnvironment } from './mac/setup';
+// import { setupAeneasAndCharon as m_setupAeneasAndCharon } from './mac/aeneas';
+// import { ensureRemCommandLineInstalled as m_ensureRemCommandLineInstalled } from './mac/cli';
 
 export async function activate(context: vscode.ExtensionContext) {
   // Run environment setup on extension activation. This won't do anything once
@@ -12,11 +21,25 @@ export async function activate(context: vscode.ExtensionContext) {
   if (vscode.window.activeTextEditor &&
       vscode.window.activeTextEditor.document.languageId === 'rust') {
         try {
-          await setupEnvironment();
-          await setupAeneasAndCharon(context);
-          await ensureRemCommandLineInstalled();
+          if (process.platform === 'linux') {
+            await l_setupEnvironment();
+            await l_setupAeneasAndCharon(context);
+            await l_ensureRemCommandLineInstalled();
+          } else if (process.platform === 'win32') {
+            await w_setupEnvironment();
+            await w_setupAeneasAndCharon(context);
+            await w_ensureRemCommandLineInstalled();
+          } else if (process.platform === 'darwin') {
+            await m_setupEnvironment();
+            await m_setupAeneasAndCharon(context);
+            await m_ensureRemCommandLineInstalled();
+          } else {
+            vscode.window.showErrorMessage('Unsupported platform.');
+            console.log(`[WARN] Unsupported platform: ${process.platform}`);
+          }
         } catch (error) {
           vscode.window.showErrorMessage(`Setup failed: ${error}`);
+          console.log(`[ERROR] Setup failed: ${error}`);
         }
   }
 

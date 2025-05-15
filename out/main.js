@@ -27,9 +27,9 @@ exports.activate = activate;
 exports.deactivate = deactivate;
 const vscode = __importStar(require("vscode"));
 const child_process_1 = require("child_process");
-const setup_1 = require("./setup");
-const aeneas_1 = require("./aeneas");
-const cli_1 = require("./cli");
+const setup_1 = require("./linux/setup");
+const aeneas_1 = require("./linux/aeneas");
+const cli_1 = require("./linux/cli");
 async function activate(context) {
     // Run environment setup on extension activation. This won't do anything once
     // the environment is set up, but it's a good practice to ensure the environment
