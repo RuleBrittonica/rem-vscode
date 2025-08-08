@@ -10,7 +10,7 @@ foreach ($d in $deps) {
 
 if ($missing.Count -gt 0) {
   Write-Host "Missing dependencies: $($missing -join ', ')" -ForegroundColor Red
-  Write-Host "Run install_windows.ps1 in this folder."
+  Write-Host "Run windows\install.ps1 in this folder."
   exit 1
 }
 
