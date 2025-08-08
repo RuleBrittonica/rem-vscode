@@ -1,52 +1,46 @@
 import * as vscode from 'vscode';
-import { exec } from 'child_process';
-import { setupEnvironment as l_setupEnvironment } from './linux/setup';
-import { setupAeneasAndCharon as l_setupAeneasAndCharon } from './linux/aeneas';
-import { ensureRemCommandLineInstalled as l_ensureRemCommandLineInstalled } from './linux/cli';
-import { setupEnvironment as w_setupEnvironment } from './windows/setup';
-import { setupAeneasAndCharon as w_setupAeneasAndCharon } from './windows/aeneas';
-import { ensureRemCommandLineInstalled as w_ensureRemCommandLineInstalled } from './windows/cli';
-import { setupEnvironment as m_setupEnvironment } from './mac/setup';
-import { setupAeneasAndCharon as m_setupAeneasAndCharon } from './mac/aeneas';
-import { ensureRemCommandLineInstalled as m_ensureRemCommandLineInstalled } from './mac/cli';
+import { checkAll } from './check/checkEnv';
 
-// import { setupEnvironment as m_setupEnvironment } from './mac/setup';
-// import { setupAeneasAndCharon as m_setupAeneasAndCharon } from './mac/aeneas';
-// import { ensureRemCommandLineInstalled as m_ensureRemCommandLineInstalled } from './mac/cli';
+const INSTALL_BASE = 'https://github.com/RuleBrittonica/rem-vscode/scripts'
 
 export async function activate(context: vscode.ExtensionContext) {
-  // Run environment setup on extension activation. This won't do anything once
-  // the environment is set up, but it's a good practice to ensure the environment
-  // is ready when the extension is activated.
-  if (vscode.window.activeTextEditor &&
-      vscode.window.activeTextEditor.document.languageId === 'rust') {
-        try {
-          if (process.platform === 'linux') {
-            await l_setupEnvironment();
-            await l_setupAeneasAndCharon(context);
-            await l_ensureRemCommandLineInstalled();
-          } else if (process.platform === 'win32') {
-            await w_setupEnvironment();
-            await w_setupAeneasAndCharon(context);
-            await w_ensureRemCommandLineInstalled();
-          } else if (process.platform === 'darwin') {
-            await m_setupEnvironment();
-            await m_setupAeneasAndCharon(context);
-            await m_ensureRemCommandLineInstalled();
-          } else {
-            vscode.window.showErrorMessage('Unsupported platform.');
-            console.log(`[WARN] Unsupported platform: ${process.platform}`);
-          }
-        } catch (error) {
-          vscode.window.showErrorMessage(`Setup failed: ${error}`);
-          console.log(`[ERROR] Setup failed: ${error}`);
-        }
+  // Only run on a rust file!
+  if (!(vscode.window.activeTextEditor?.document.languageId === 'rust')) {
+    return;
   }
 
-  // Have a message that displays the paths to the binaries
-  const binDirDisplay = vscode.workspace.getConfiguration('remvscode').get<string>('aeneasBinariesPath', '');
-  vscode.window.showInformationMessage(`Aeneas and Charon binaries are located at: ${binDirDisplay}`);
+  // 1) Check dependencies
+  try {
+    await checkAll();
+  } catch (err: unknown) {
+    const missingMsg = err instanceof Error ? err.message : String(err);
+    const platformKey =
+    process.platform === 'win32' ? 'windows'
+      : process.platform === 'darwin' ? 'mac'
+      : 'linux';
 
+    const url = `${INSTALL_BASE}/${platformKey}/`;
+    const choice = await vscode.window.showErrorMessage(
+      `Missing dependencies: ${missingMsg}`,
+      'Open install guide'
+    );
+    if (choice === 'Open install guide') {
+      vscode.env.openExternal(vscode.Uri.parse(url));
+    }
+
+    return;
+  }
+
+  // 2) Inform user where the binaries live
+  const binDir = vscode.workspace
+    .getConfiguration('remvscode')
+    .get<string>('aeneasBinariesPath')
+    || defaultBinPath();
+  vscode.window.showInformationMessage(
+    `All dependencies found. Binaries at ${binDir}`
+  );
+
+  // 3) Register the command
   let disposable = vscode.commands.registerCommand('remvscode.refactor', async () => {
     // Get the active editor
     const editor = vscode.window.activeTextEditor;
@@ -109,3 +103,12 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {}
+
+// fallback for default ~/.local/bin on *nix, ~/bin on Windows
+function defaultBinPath(): string {
+  if (process.platform === 'win32') {
+    return `${process.env.USERPROFILE}\\bin`;
+  } else {
+    return `${process.env.HOME}/.local/bin`;
+  }
+}
